@@ -80,6 +80,9 @@
 (require 'py-autopep8)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
+;; backend to jedi for finding definitions
+(setq elpy-rpc-backend "jedi")
+
 ;; allow easy switching between python envs
 ;; from conda
 
