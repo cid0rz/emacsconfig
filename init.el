@@ -25,7 +25,7 @@
 
 (add-to-list 'package-archives
      '("melpa" . "http://melpa.org/packages/") t)
-
+(unless package--initialized (package-initialize t))
 (when (not package-archive-contents)
   (package-refresh-contents))
 
