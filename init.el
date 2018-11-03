@@ -40,7 +40,8 @@
     yaml-mode
     docker-compose-mode
     arduino-mode
-    use-package))
+    use-package
+    pyenv-mode))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -87,8 +88,19 @@
 
 ;; allow easy switching between python envs
 ;; from conda
+;;(setenv "WORKON_HOME" "/home/cid0rz/miniconda2/envs")
 
-(setenv "WORKON_HOME" "/home/cid0rz/miniconda2/envs")
+
+;; Integrate pyenv
+
+(use-package pyenv-mode
+  :init
+  (add-to-list 'exec-path "~/.pyenv/shims")
+  (setenv "WORKON_HOME" "~/.pyenv/versions/")
+  :config
+  (pyenv-mode)
+  :bind
+  ("C-x p e" . pyenv-activate-current-project))
 
 
 ;; LISP CONFIGURATION
@@ -110,6 +122,17 @@
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode) ;; Requires Ispell
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+
+(require 'pymacs)
+(autoload 'pymacs-apply "pymacs")
+(autoload 'pymacs-call "pymacs")
+(autoload 'pymacs-eval "pymacs" nil t)
+(autoload 'pymacs-exec "pymacs" nil t)
+(autoload 'pymacs-load "pymacs" nil t)
+(autoload 'pymacs-autoload "pymacs")
+;;(eval-after-load "pymacs"
+;;  '(add-to-list 'pymacs-load-path YOUR-PYMACS-DIRECTORY"))
+
 
 ;; init.el ends here
 (custom-set-variables
