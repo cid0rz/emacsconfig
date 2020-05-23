@@ -1,4 +1,8 @@
-;; init.el --- Emacs configuration
+;;; init.el --- Initialization file for Emacs
+
+;;; Commentary:
+;;; Emacs Startup File --- initialization for Emacs
+
 
 ;; Copyright (C) 2017 Free Software Foundation, Inc.
 
@@ -17,93 +21,36 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;;; Code:
 
-;; INSTALL PACKAGES
-;; --------------------------------------
+;;Global configuration
+
+(electric-pair-mode 1)
+(setq inhibit-startup-message t)
+;; (global-display-line-numbers-mode 1) ;; if you want line numbers
+;;(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x
+;;(global-set-key "\C-c\C-m" 'execute-extended-command) ;; add binding for M-x
+
+;; Package setup
 
 (require 'package)
-
+(setq package-enable-at-startup nil)
 (add-to-list 'package-archives
-     '("melpa" . "http://melpa.org/packages/") t)
-(unless package--initialized (package-initialize t))
+	     '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar myPackages
-  '(better-defaults
-    elpy
-    flycheck
-    material-theme
-    py-autopep8
-    magit
-    dockerfile-mode
-    yaml-mode
-    docker-compose-mode
-    arduino-mode
-    use-package
-    pyenv-mode))
+;; bootstrap use-package
 
-(mapc #'(lambda (package)
-    (unless (package-installed-p package)
-      (package-install package)))
-      myPackages)
-
-;;ORG-MODE
-
-(require 'org)
-
-;;LOAD LANGUAGES FOR CODEBLOCKS
-
-(org-babel-do-load-languages
- 'org-babel-load-languages '((C . t) (python . t)))
-
-;; BASIC CUSTOMIZATION
-;; --------------------------------------
-
-(setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'material t) ;; load material theme
-(global-linum-mode t) ;; enable line numbers globally
-(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x 
-(global-set-key "\C-c\C-m" 'execute-extended-command) ;; add binding for M-x
-(global-set-key (kbd "C-x g") 'magit-status)
-(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
-
-;; PYTHON CONFIGURATION
-;; --------------------------------------
-
-(elpy-enable)
-
-;; use flycheck not flymake with available languages
-
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-
-;; enable autopep8 formatting on save
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-
-;; backend to jedi for finding definitions
-(setq elpy-rpc-backend "jedi")
-
-;; allow easy switching between python envs
-;; from conda
-;;(setenv "WORKON_HOME" "/home/cid0rz/miniconda2/envs")
-
-
-;; Integrate pyenv
-
-(use-package pyenv-mode
-  :init
-  (add-to-list 'exec-path "~/.pyenv/shims")
-  (setenv "WORKON_HOME" "~/.pyenv/versions/")
-  :config
-  (pyenv-mode)
-  :bind
-  ("C-x p e" . pyenv-activate-current-project))
+(eval-when-compile
+  (require 'use-package))
+;;(require 'diminish)                ;; if you use :diminish
+(require 'bind-key)                ;; if you use any :bind variant
 
 
 ;; LISP CONFIGURATION
+
 (add-hook 'emacs-lisp-mode-hook
               (lambda ()
                 ;; Use spaces, not tabs.
@@ -123,28 +70,65 @@
 (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode) ;; Requires Ispell
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 
-(require 'pymacs)
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-load "pymacs" nil t)
-(autoload 'pymacs-autoload "pymacs")
-;;(eval-after-load "pymacs"
-;;  '(add-to-list 'pymacs-load-path YOUR-PYMACS-DIRECTORY"))
+;; ** PACKAGE LOADING **
+
+(use-package better-defaults
+  :ensure t)
+
+(use-package material-theme
+  :ensure t
+  :config
+  (load-theme 'material t))
+
+(use-package pyenv-mode
+  :ensure t
+  :init
+  (add-to-list 'exec-path "~/.pyenv/shims")
+  (setenv "WORKON_HOME" "~/.pyenv/versions/")
+  :config
+  (pyenv-mode)
+  :bind
+  ("C-x p e" . pyenv-activate-current-project))
+
+(use-package pyenv-mode-auto
+  :ensure t)
+
+(use-package org
+  :ensure t
+  :config
+  ;;LOAD LANGUAGES FOR CODEBLOCKS
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((C . t) (python . t))))
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
+  ;; backend to jedi for finding definitions
+  ;;(setq elpy-rpc-backend "jedi")
+  )
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+(use-package magit
+  :ensure t
+  :bind
+  (("C-x g" . magit-status))
+  (("C-x M-g" . magit-dispatch-popup)))
+
+(use-package py-autopep8
+  :hook (elpy-mode py-autopep8-enable-on-save))
+
+(use-package yaml-mode
+  :ensure t)
+(use-package dockerfile-mode
+  :ensure t)
+(use-package docker-compose-mode
+  :ensure t)
+(use-package arduino-mode
+  :ensure t)
 
 
-;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(docker-compose-mode yaml-mode dockerfile-mode use-package arduino-mode magit py-autopep8 material-theme flycheck elpy better-defaults)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;;; init.el ends here
