@@ -105,8 +105,7 @@
   :init
   (elpy-enable)
   ;; backend to jedi for finding definitions
-  ;;(setq elpy-rpc-backend "jedi")
-  )
+  :custom (elpy-rpc-backend "jedi"))
 
 (use-package flycheck
   :ensure t
@@ -123,12 +122,49 @@
 
 (use-package yaml-mode
   :ensure t)
+
 (use-package dockerfile-mode
   :ensure t)
+
 (use-package docker-compose-mode
   :ensure t)
+
 (use-package arduino-mode
   :ensure t)
 
+(use-package which-key
+  :ensure t
+  :config (which-key-mode))
+
+(use-package git-timemachine
+  :ensure t
+  :bind ("M-g M-t" . git-timemachine))
+
+(use-package ace-window
+  :ensure t
+  :init
+  (progn
+    (setq aw-scope 'global) ;; was frame
+    (global-set-key (kbd "C-x O") 'other-frame)
+    (global-set-key [remap other-window] 'ace-window)
+    (custom-set-faces
+     '(aw-leading-char-face
+       ((t (:inherit ace-jump-face-foreground :height 3.0)))))))
+
 
 ;;; init.el ends here
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(elpy-rpc-backend "jedi" t)
+ '(package-selected-packages
+   '(git-timemachine which-key web-mode use-package pyenv-mode-auto py-autopep8 material-theme magit flycheck elpy dockerfile-mode docker-compose-mode better-defaults arduino-mode ace-window)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
