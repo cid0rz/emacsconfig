@@ -70,6 +70,10 @@
 (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode) ;; Requires Ispell
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 
+;; EXWM configuration
+
+;;(use-package )
+
 ;; ** PACKAGE LOADING **
 
 (use-package better-defaults
@@ -106,6 +110,10 @@
   (elpy-enable)
   ;; backend to jedi for finding definitions
   :custom (elpy-rpc-backend "jedi"))
+
+(use-package company
+  :ensure t
+  :hook (after-init . global-company-mode))
 
 (use-package flycheck
   :ensure t
