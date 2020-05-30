@@ -30,6 +30,7 @@
 ;; (global-display-line-numbers-mode 1) ;; if you want line numbers
 ;;(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x
 ;;(global-set-key "\C-c\C-m" 'execute-extended-command) ;; add binding for M-x
+(global-auto-revert-mode t)
 
 ;; Package setup
 
@@ -72,7 +73,42 @@
 
 ;; EXWM configuration
 
-;;(use-package )
+(use-package exwm
+  :ensure t
+  :config
+  (use-package exwm-config
+    :config (exwm-config-example))
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
+  (display-time-mode 1)
+  (setq layout-show-all-buffers t)
+  (setq display-time-string-forms
+      '((concat 24-hours ":" minutes " " day "/" month "/" year)))
+  
+  ;;(display-battery-mode 1)
+  ;;(setq display-time-string-forms '((format-time-string "%H:%M " now)))
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain) ;;to solve ediff issue
+  (setq exwm-input-simulation-keys
+      '(
+        ;; movement
+        ([?\C-b] . [left])
+        ([?\M-b] . [C-left])
+        ([?\C-f] . [right])
+        ([?\M-f] . [C-right])
+        ([?\C-p] . [up])
+        ([?\C-n] . [down])
+        ([?\C-a] . [home])
+        ([?\C-e] . [end])
+        ([?\M-v] . [prior])
+        ([?\C-v] . [next])
+        ([?\C-d] . [delete])
+        ([?\C-k] . [S-end delete])
+        ;; cut/paste.
+        ([?\C-w] . [?\C-x])
+        ([?\M-w] . [?\C-c])
+        ([?\C-y] . [?\C-v])
+        ;; search
+        ([?\C-s] . [?\C-f]))))
 
 ;; ** PACKAGE LOADING **
 
