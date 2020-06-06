@@ -74,6 +74,7 @@
 ;; EXWM configuration
 
 (use-package exwm
+  :disabled
   :ensure t
   :config
   (use-package exwm-config
