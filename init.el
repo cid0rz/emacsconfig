@@ -75,12 +75,11 @@
 ;; EXWM configuration
 
 (use-package exwm
-  :disabled
   :ensure t
   :config
-  (use-package exwm-config
-    :config (exwm-config-example))
-  (require 'exwm-systemtray)
+  (require 'exwm-config)
+  (exwm-config-example)
+  (require  'exwm-systemtray)
   (exwm-systemtray-enable)
   (display-time-mode 1)
   (setq layout-show-all-buffers t)
