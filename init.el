@@ -31,6 +31,7 @@
 ;;(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x
 ;;(global-set-key "\C-c\C-m" 'execute-extended-command) ;; add binding for M-x
 (global-auto-revert-mode t)
+(setq vc-follow-symlinks t)
 
 ;; Straight package manager setup
 (defvar bootstrap-version)
@@ -75,6 +76,7 @@
 ;; EXWM configuration
 
 (use-package exwm
+  :disabled
   :ensure t
   :config
   (require 'exwm-config)
