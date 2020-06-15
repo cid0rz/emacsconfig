@@ -152,7 +152,15 @@
 
 (use-package company
   :ensure t
-  :hook (after-init . global-company-mode))
+  :hook (after-init . global-company-mode)
+  :config
+  (require 'company-elisp)
+  (push 'company-elisp company-backends))
+
+(use-package company-jedi
+  :ensure t
+  :config
+  (push 'company-jedy company-backends))
 
 (use-package flycheck
   :ensure t
