@@ -49,7 +49,9 @@
 
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
-(use-package bind-key)
+(use-package bind-key
+  :ensure t)
+(setq tramp-default-method "ssh")
 
 
 ;; LISP CONFIGURATION
@@ -72,6 +74,20 @@
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode) ;; Requires Ispell
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+
+;; PYMACS is a way to connect python and elisp
+
+(require 'pymacs)
+(autoload 'pymacs-apply "pymacs")
+(autoload 'pymacs-call "pymacs")
+(autoload 'pymacs-eval "pymacs" nil t)
+(autoload 'pymacs-exec "pymacs" nil t)
+(autoload 'pymacs-load "pymacs" nil t)
+
+(eval-after-load "pymacs"
+  '(add-to-list 'pymacs-load-path  "/home/cid0rz/.emacs.d/pymacscode"))
+
+(setenv "PYMACS_PYTHON" "/home/cid0rz/.pyenv/versions/3.8.2/envs/pymacs/bin/python")
 
 ;; EXWM configuration
 
@@ -118,18 +134,26 @@
 (use-package better-defaults
   :ensure t)
 
+;;     THEMES
+
 (use-package material-theme
+  ;:disabled
   :ensure t
   :config
   (load-theme 'material t))
 
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+
 (use-package pyenv-mode
   :ensure t
   :init
+  (pyenv-mode)
+  :config
   (add-to-list 'exec-path "~/.pyenv/shims")
   (setenv "WORKON_HOME" "~/.pyenv/versions/")
-  :config
-  (pyenv-mode)
   :bind
   ("C-x p e" . pyenv-activate-current-project))
 
@@ -198,13 +222,12 @@
 (use-package ace-window
   :ensure t
   :init
-  (progn
-    (setq aw-scope 'global) ;; was frame
-    (global-set-key (kbd "C-x O") 'other-frame)
-    (global-set-key [remap other-window] 'ace-window)
-    (custom-set-faces
-     '(aw-leading-char-face
-       ((t (:inherit ace-jump-face-foreground :height 3.0)))))))
+  (setq aw-scope 'global) ;; was frame
+  (global-set-key (kbd "C-x O") 'other-frame)
+  (global-set-key [remap other-window] 'ace-window)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t (:inherit ace-jump-face-foreground :height 3.0))))))
 
 
 (use-package vterm
