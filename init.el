@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-;;Global configuration
+;;GLOBAL CONFIGURATION
 
 (electric-pair-mode 1)
 (setq inhibit-startup-message t)
@@ -32,6 +32,7 @@
 ;;(global-set-key "\C-c\C-m" 'execute-extended-command) ;; add binding for M-x
 (global-auto-revert-mode t)
 (setq vc-follow-symlinks t)
+(desktop-save-mode 1)
 
 ;; Straight package manager setup
 (defvar bootstrap-version)
@@ -150,12 +151,10 @@
 (use-package pyenv-mode
   :ensure t
   :init
-  (pyenv-mode)
-  :config
   (add-to-list 'exec-path "~/.pyenv/shims")
   (setenv "WORKON_HOME" "~/.pyenv/versions/")
-  :bind
-  ("C-x p e" . pyenv-activate-current-project))
+  :config
+  (pyenv-mode))
 
 (use-package pyenv-mode-auto
   :ensure t)
