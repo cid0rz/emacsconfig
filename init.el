@@ -25,7 +25,8 @@
 
 ;;GLOBAL CONFIGURATION
 
-(electric-pair-mode 1)
+;;(electric-pair-mode 1) replaced by smartparens
+
 (setq inhibit-startup-message t)
 ;; (global-display-line-numbers-mode 1) ;; if you want line numbers
 ;;(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x
@@ -130,10 +131,6 @@
         ;; search
         ([?\C-s] . [?\C-f]))))
 
-;; ** PACKAGE LOADING **
-
-(use-package better-defaults
-  :ensure t)
 
 ;;     THEMES
 
@@ -147,6 +144,62 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; ** PACKAGE LOADING **
+
+(use-package better-defaults
+  :ensure t)
+
+(use-package smartparens
+  :ensure t
+  :config
+  (require 'smartparens-config)
+  :bind
+  ("C-M-a" . sp-beginning-of-sexp)
+  ("C-M-e" . sp-end-of-sexp)
+
+  ("C-<down>" . sp-down-sexp)
+  ("C-<up>"   . sp-up-sexp)
+  ("M-<down>" . sp-backward-down-sexp)
+  ("M-<up>"   . sp-backward-up-sexp)
+
+  ("C-M-f" . sp-forward-sexp)
+  ("C-M-b" . sp-backward-sexp)
+
+  ("C-M-n" . sp-next-sexp)
+  ("C-M-p" . sp-previous-sexp)
+
+  ("C-S-f" . sp-forward-symbol)
+  ("C-S-b" . sp-backward-symbol)
+
+  ("C-<right>" . sp-forward-slurp-sexp)
+  ("M-<right>" . sp-forward-barf-sexp)
+  ("C-<left>"  . sp-backward-slurp-sexp)
+  ("M-<left>"  . sp-backward-barf-sexp)
+
+  ("C-M-t" . sp-transpose-sexp)
+  ("C-M-k" . sp-kill-sexp)
+  ("C-k"   . sp-kill-hybrid-sexp)
+  ("M-k"   . sp-backward-kill-sexp)
+  ("C-M-w" . sp-copy-sexp)
+  ("C-M-d" . delete-sexp)
+
+  ("M-<backspace>" . backward-kill-word)
+  ("C-<backspace>" . sp-backward-kill-word)
+  ([remap sp-backward-kill-word] . backward-kill-word)
+
+  ("M-[" . sp-backward-unwrap-sexp)
+  ("M-]" . sp-unwrap-sexp)
+
+  ("C-x C-t" . sp-transpose-hybrid-sexp)
+
+  ("C-c ("  . wrap-with-parens)
+  ("C-c ["  . wrap-with-brackets)
+  ("C-c {"  . wrap-with-braces)
+  ("C-c '"  . wrap-with-single-quotes)
+  ("C-c \"" . wrap-with-double-quotes)
+  ("C-c _"  . wrap-with-underscores)
+  ("C-c `"  . wrap-with-back-quotes)
+  :hook (prog-mode . smartparens-mode))
 
 (use-package pyenv-mode
   :ensure t
