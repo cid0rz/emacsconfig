@@ -201,16 +201,37 @@
   ("C-c `"  . wrap-with-back-quotes)
   :hook (prog-mode . smartparens-mode))
 
-(use-package pyenv-mode
+(use-package elisp-slime-nav
   :ensure t
-  :init
-  (add-to-list 'exec-path "~/.pyenv/shims")
-  (setenv "WORKON_HOME" "~/.pyenv/versions/")
-  :config
-  (pyenv-mode))
+  :hook
+  (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
+  (lisp-interaction-mode . turn-on-elisp-slime-nav-mode)
+  (ielm-mode . turn-on-elisp-slime-nav-mode))
 
-(use-package pyenv-mode-auto
-  :ensure t)
+(use-package pyenv
+  :straight (:host github :repo "aiguofer/pyenv.el")
+  :config
+  (global-pyenv-mode))
+
+(use-package switch-buffer-functions
+  :ensure t
+  :config
+  (defun pyenv-update-on-buffer-switch (prev curr)
+    (if (string-equal "Python" (format-mode-line mode-name nil nil curr))
+        (pyenv-use-corresponding)))
+
+  (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
+
+;(use-package pyenv-mode
+;  :ensure t
+;  :init
+;  (add-to-list 'exec-path "~/.pyenv/shims")
+;  (setenv "WORKON_HOME" "~/.pyenv/versions/")
+;  :config
+;  (pyenv-mode))
+
+;(use-package pyenv-mode-auto
+;  :ensure t)
 
 (use-package org
   :ensure t
@@ -256,6 +277,14 @@
 
 (use-package dockerfile-mode
   :ensure t)
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 
 (use-package docker-compose-mode
   :ensure t)
