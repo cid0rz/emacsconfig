@@ -51,8 +51,7 @@
 
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
-(use-package bind-key
-  :ensure t)
+(use-package bind-key)
 (setq tramp-default-method "ssh")
 
 
@@ -77,25 +76,11 @@
 (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode) ;; Requires Ispell
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 
-;; PYMACS is a way to connect python and elisp
-
-(require 'pymacs)
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-load "pymacs" nil t)
-
-(eval-after-load "pymacs"
-  '(add-to-list 'pymacs-load-path  "/home/cid0rz/.emacs.d/pymacscode"))
-
-(setenv "PYMACS_PYTHON" "/home/cid0rz/.pyenv/versions/3.8.2/envs/pymacs/bin/python")
-
 ;; EXWM configuration
 
 (use-package exwm
   :disabled
-  :ensure t
+  
   :config
   (require 'exwm-config)
   (exwm-config-example)
@@ -136,23 +121,51 @@
 
 (use-package material-theme
   ;:disabled
-  :ensure t
+  
   :config
   (load-theme 'material t))
 
 (use-package rainbow-delimiters
-  :ensure t
+  
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; ** PACKAGE LOADING **
 
 (use-package better-defaults
-  :ensure t)
+  )
 
 (use-package smartparens
-  :ensure t
+  
   :config
   (require 'smartparens-config)
+  (defmacro def-pairs (pairs)
+    "Define functions for pairing. PAIRS is an alist of (NAME . STRING)
+  conses, where NAME is the function name that will be created and
+  STRING is a single-character string that marks the opening character.
+
+  (def-pairs ((paren . \"(\")
+              (bracket . \"[\"))
+
+  defines the functions WRAP-WITH-PAREN and WRAP-WITH-BRACKET,
+  respectively."
+  `(progn
+     ,@(loop for (key . val) in pairs
+             collect
+             `(defun ,(read (concat
+                             "wrap-with-"
+                             (prin1-to-string key)
+                             "s"))
+                  (&optional arg)
+                (interactive "p")
+                (sp-wrap-with-pair ,val)))))
+
+  (def-pairs ((paren . "(")
+              (bracket . "[")
+              (brace . "{")
+              (single-quote . "'")
+              (double-quote . "\"")
+              (back-quote . "`")))
+
   :bind
   ("C-M-a" . sp-beginning-of-sexp)
   ("C-M-e" . sp-end-of-sexp)
@@ -202,7 +215,7 @@
   :hook (prog-mode . smartparens-mode))
 
 (use-package elisp-slime-nav
-  :ensure t
+  
   :hook
   (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
   (lisp-interaction-mode . turn-on-elisp-slime-nav-mode)
@@ -214,7 +227,7 @@
   (global-pyenv-mode))
 
 (use-package switch-buffer-functions
-  :ensure t
+  :disabled
   :config
   (defun pyenv-update-on-buffer-switch (prev curr)
     (if (string-equal "Python" (format-mode-line mode-name nil nil curr))
@@ -223,7 +236,7 @@
   (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
 ;(use-package pyenv-mode
-;  :ensure t
+;  
 ;  :init
 ;  (add-to-list 'exec-path "~/.pyenv/shims")
 ;  (setenv "WORKON_HOME" "~/.pyenv/versions/")
@@ -231,40 +244,40 @@
 ;  (pyenv-mode))
 
 ;(use-package pyenv-mode-auto
-;  :ensure t)
+;  )
+
+(use-package macrostep
+  :bind ("C-c e m" . macrostep-expand))
+
+(use-package ob-hy )
 
 (use-package org
-  :ensure t
   :config
   ;;LOAD LANGUAGES FOR CODEBLOCKS
   (org-babel-do-load-languages
-   'org-babel-load-languages '((C . t) (python . t))))
+   'org-babel-load-languages '((C . t) (python . t) (hy . t))))
 
 (use-package elpy
-  :ensure t
+  
   :init
   (elpy-enable)
   ;; backend to jedi for finding definitions
   :custom (elpy-rpc-backend "jedi"))
 
 (use-package company
-  :ensure t
   :hook (after-init . global-company-mode)
   :config
   (require 'company-elisp)
   (push 'company-elisp company-backends))
 
 (use-package company-jedi
-  :ensure t
   :config
   (push 'company-jedy company-backends))
 
 (use-package flycheck
-  :ensure t
   :init (global-flycheck-mode))
 
 (use-package magit
-  :ensure t
   :bind
   (("C-x g" . magit-status))
   (("C-x M-g" . magit-dispatch-popup)))
@@ -272,36 +285,31 @@
 (use-package py-autopep8
   :hook (elpy-mode py-autopep8-enable-on-save))
 
-(use-package yaml-mode
-  :ensure t)
+(use-package hy-mode
+  :mode ("\\.hy\\'" . hy-mode))
 
-(use-package dockerfile-mode
-  :ensure t)
+(use-package yaml-mode)
+
+(use-package dockerfile-mode)
 
 (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-(use-package docker-compose-mode
-  :ensure t)
+(use-package docker-compose-mode)
 
-(use-package arduino-mode
-  :ensure t)
+(use-package arduino-mode)
 
 (use-package which-key
-  :ensure t
   :config (which-key-mode))
 
 (use-package git-timemachine
-  :ensure t
   :bind ("M-g M-t" . git-timemachine))
 
 (use-package ace-window
-  :ensure t
   :init
   (setq aw-scope 'global) ;; was frame
   (global-set-key (kbd "C-x O") 'other-frame)
@@ -310,9 +318,11 @@
    '(aw-leading-char-face
      ((t (:inherit ace-jump-face-foreground :height 3.0))))))
 
+(use-package lua-mode)
 
 (use-package vterm
-    :ensure t)
+  ;:disabled
+  )
 
 ;;; init.el ends here
 
