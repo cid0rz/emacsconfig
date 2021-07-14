@@ -1,41 +1,93 @@
-;;; init.el --- Initialization file for Emacs
+;; The default is 800 kilobytes.  Measured in bytes.
+(setq gc-cons-threshold (* 50 1000 1000))
 
-;;; Commentary:
-;;; Emacs Startup File --- initialization for Emacs
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
+;;silence native-comp warnings
+(setq native-comp-async-report-warnings-errors nil)
 
-;; Copyright (C) 2017 Free Software Foundation, Inc.
+;;use shallow clones
+(setq straight-vc-git-default-clone-depth 1)
 
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 3, or (at
-;; your option) any later version.
-
-;; This program is distributed in the hope that it will be useful, but
-;; WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;; General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
-
-;;; Code:
-
-;;GLOBAL CONFIGURATION
-
-;;(electric-pair-mode 1) replaced by smartparens
-
+;;no startup message
 (setq inhibit-startup-message t)
-;; (global-display-line-numbers-mode 1) ;; if you want line numbers
+
+;; if you want line numbers
+;; (global-display-line-numbers-mode 1)
+
+;; popular bindings
 ;;(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x
 ;;(global-set-key "\C-c\C-m" 'execute-extended-command) ;; add binding for M-x
-(global-auto-revert-mode t)
-(setq vc-follow-symlinks t)
-(desktop-save-mode 1)
 
-;; Straight package manager setup
+;;see the changes on disk
+(global-auto-revert-mode t)
+
+;;follow symlinks to files
+(setq vc-follow-symlinks t)
+;;save where you were working
+(desktop-save-mode 1)
+;;make dired show this in a nice way
+(setq dired-listing-switches "-alh")
+
+;; use utf-8
+(set-default-coding-systems 'utf-8)
+
+;;use ssh for tramp
+(setq tramp-default-method "ssh")
+
+;;remove menu-bar and scroll bars
+(unless (eq window-system 'ns)
+  (menu-bar-mode -1))
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'horizontal-scroll-bar-mode)
+  (horizontal-scroll-bar-mode -1))
+
+(autoload 'zap-up-to-char "misc"
+  "Kill up to, but not including ARGth occurrence of CHAR." t)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+;; remember where you were visiting buffers
+;; https://www.emacswiki.org/emacs/SavePlace
+(save-place-mode 1)
+
+;; some better built-in alternatives
+(global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+
+;;show matching parenthesis
+(show-paren-mode 1)
+;;use spaces, not tabs
+(setq-default indent-tabs-mode nil)
+(setq save-interprogram-paste-before-kill t
+      apropos-do-all t
+      mouse-yank-at-point t
+      require-final-newline t
+      visible-bell t
+      load-prefer-newer t
+      ediff-window-setup-function 'ediff-setup-windows-plain
+      custom-file (expand-file-name "~/.emacs.d/custom.el"))
+
+(unless backup-directory-alist
+  (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                                 "backups")))))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -52,31 +104,39 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 (use-package bind-key)
-(setq tramp-default-method "ssh")
-
-
-;; LISP CONFIGURATION
 
 (add-hook 'emacs-lisp-mode-hook
-              (lambda ()
-                ;; Use spaces, not tabs.
-                (setq indent-tabs-mode nil)
-                ;; Keep M-TAB for `completion-at-point'
-                (define-key flyspell-mode-map "\M-\t" nil)
-                ;; Pretty-print eval'd expressions.
-                (define-key emacs-lisp-mode-map
-                            "\C-x\C-e" 'pp-eval-last-sexp)
-                ;; Recompile if .elc exists.
-                (add-hook (make-local-variable 'after-save-hook)
-                          (lambda ()
-                            (byte-force-recompile default-directory)))
-                (define-key emacs-lisp-mode-map
-                            "\r" 'reindent-then-newline-and-indent)))
+          (lambda ()
+            ;; Use spaces, not tabs.
+            (setq indent-tabs-mode nil)
+            ;; Keep M-TAB for `completion-at-point'
+            (define-key flyspell-mode-map "\M-\t" nil)
+            ;; Pretty-print eval'd expressions.
+            (define-key emacs-lisp-mode-map
+              "\C-x\C-e" 'pp-eval-last-sexp)
+            ;; Recompile if .elc exists.
+            (add-hook (make-local-variable 'after-save-hook)
+                      (lambda ()
+                        (byte-force-recompile default-directory)))
+            (define-key emacs-lisp-mode-map
+              "\r" 'reindent-then-newline-and-indent)))
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode) ;; Requires Ispell
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 
-;; EXWM configuration
+(use-package slime
+  :straight t
+  :config (setq inferior-lisp-program "sbcl")
+  )
+
+(use-package elisp-slime-nav
+  :hook
+  (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
+  (lisp-interaction-mode . turn-on-elisp-slime-nav-mode)
+  (ielm-mode . turn-on-elisp-slime-nav-mode))
+
+;; async and await for emacs lisp
+(use-package aio)
 
 (use-package exwm
   :disabled
@@ -116,23 +176,30 @@
         ;; search
         ([?\C-s] . [?\C-f]))))
 
-
 ;;     THEMES
-
 (use-package material-theme
   ;:disabled
-  
   :config
   (load-theme 'material t))
 
+;;(setq modus-themes-scale-headings t)
+;;(load-theme 'modus-operandi)
+
+
 (use-package rainbow-delimiters
-  
+
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;; ** PACKAGE LOADING **
+(use-package rainbow-mode)
 
-(use-package better-defaults
-  )
+(use-package ace-window
+  :init
+  (setq aw-scope 'global) ;; was frame
+  (global-set-key (kbd "C-x O") 'other-frame)
+  (global-set-key [remap other-window] 'ace-window)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t (:inherit ace-jump-face-foreground :height 3.0))))))
 
 (use-package smartparens
   
@@ -149,7 +216,7 @@
   defines the functions WRAP-WITH-PAREN and WRAP-WITH-BRACKET,
   respectively."
   `(progn
-     ,@(loop for (key . val) in pairs
+     ,@(cl-loop for (key . val) in pairs
              collect
              `(defun ,(read (concat
                              "wrap-with-"
@@ -214,12 +281,58 @@
   ("C-c `"  . wrap-with-back-quotes)
   :hook (prog-mode . smartparens-mode))
 
-(use-package elisp-slime-nav
-  
-  :hook
-  (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
-  (lisp-interaction-mode . turn-on-elisp-slime-nav-mode)
-  (ielm-mode . turn-on-elisp-slime-nav-mode))
+(use-package flycheck
+  :init (global-flycheck-mode))
+
+(use-package epa
+    :config
+    (progn
+      (epa-file-enable)
+      (setq epa-file-cache-passphrase-for-symmetric-encryption t)))
+
+(use-package vertico
+  :straight '(vertico :host github
+                      :repo "minad/vertico"
+                      :branch "main")
+  :init
+  (vertico-mode)
+  )
+
+(use-package corfu
+  :straight '(corfu :host github
+                    :repo "minad/corfu"
+                    :branch "main")
+  :config
+  (corfu-global-mode))
+
+(use-package orderless
+  ;:repo "oantolin/orderless"
+  ;:branch "master"
+  :init
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))))
+
+(use-package marginalia
+  :straight '(marginalia :host github
+                         :repo "minad/marginalia"
+                         :branch "main")
+  :after vertico
+  :custom
+  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :init
+  (marginalia-mode))
+
+(use-package consult
+  :straight '(consult :host github
+                      :repo "minad/consult"
+                      :branch "main"))
+
+(use-package which-key
+  :config (which-key-mode))
+
+(use-package macrostep
+  :bind ("C-c e m" . macrostep-expand))
 
 (use-package pyenv
   :straight (:host github :repo "aiguofer/pyenv.el")
@@ -235,52 +348,12 @@
 
   (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
-;(use-package pyenv-mode
-;  
-;  :init
-;  (add-to-list 'exec-path "~/.pyenv/shims")
-;  (setenv "WORKON_HOME" "~/.pyenv/versions/")
-;  :config
-;  (pyenv-mode))
-
-;(use-package pyenv-mode-auto
-;  )
-
-(use-package macrostep
-  :bind ("C-c e m" . macrostep-expand))
-
-(use-package ob-hy )
-
-(use-package org
-  :config
-  ;;LOAD LANGUAGES FOR CODEBLOCKS
-  (org-babel-do-load-languages
-   'org-babel-load-languages '((C . t) (python . t) (hy . t))))
-
 (use-package elpy
-  
   :init
   (elpy-enable)
   ;; backend to jedi for finding definitions
   :custom (elpy-rpc-backend "jedi"))
 
-(use-package company
-  :hook (after-init . global-company-mode)
-  :config
-  (require 'company-elisp)
-  (push 'company-elisp company-backends))
-
-(use-package company-jedi
-  :config
-  (push 'company-jedy company-backends))
-
-(use-package flycheck
-  :init (global-flycheck-mode))
-
-(use-package magit
-  :bind
-  (("C-x g" . magit-status))
-  (("C-x M-g" . magit-dispatch-popup)))
 
 (use-package py-autopep8
   :hook (elpy-mode py-autopep8-enable-on-save))
@@ -288,9 +361,57 @@
 (use-package hy-mode
   :mode ("\\.hy\\'" . hy-mode))
 
+;;for org-babel
+(use-package ob-hy)
+
+(use-package htmlize)
+
+(use-package org
+      :config
+      (require 'ob-comint)
+      ;;LOAD LANGUAGES FOR CODEBLOCKS
+
+      (with-eval-after-load 'org
+        (org-babel-do-load-languages
+         'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t)))
+        (require 'org-tempo)
+
+        (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+        (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+        (add-to-list 'org-structure-template-alist '("py" . "src python"))
+      ))
+
+;;  (setq org-html-htmlize-output-type 'css)
+
+  ;;git flavoured markdown
+  (use-package ox-gfm
+    :config
+    (require 'ox-gfm nil t)
+    )
+
+(use-package magit
+  :bind
+  (("C-x g" . magit-status))
+  (("C-x M-g" . magit-dispatch-popup)))
+
+(use-package git-timemachine
+  :bind ("M-g M-t" . git-timemachine))
+
+(defun ediff-copy-both-to-C ()
+  "combine both buffers into the result buffer in order"
+  (interactive)
+  (ediff-copy-diff ediff-current-difference nil 'C nil
+                   (concat
+                    (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                    (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+(defun add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+(add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
+
 (use-package yaml-mode)
 
-(use-package dockerfile-mode)
+(use-package docker-compose-mode)
+
+(use-package arduino-mode)
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -299,44 +420,4 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-(use-package docker-compose-mode)
-
-(use-package arduino-mode)
-
-(use-package which-key
-  :config (which-key-mode))
-
-(use-package git-timemachine
-  :bind ("M-g M-t" . git-timemachine))
-
-(use-package ace-window
-  :init
-  (setq aw-scope 'global) ;; was frame
-  (global-set-key (kbd "C-x O") 'other-frame)
-  (global-set-key [remap other-window] 'ace-window)
-  (custom-set-faces
-   '(aw-leading-char-face
-     ((t (:inherit ace-jump-face-foreground :height 3.0))))))
-
-(use-package lua-mode)
-
-(use-package vterm
-  ;:disabled
-  )
-
-;;; init.el ends here
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(elpy-rpc-backend "jedi" t)
- '(package-selected-packages
-   '(git-timemachine which-key web-mode use-package pyenv-mode-auto py-autopep8 material-theme magit flycheck elpy dockerfile-mode docker-compose-mode better-defaults arduino-mode ace-window)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+(use-package vterm)
