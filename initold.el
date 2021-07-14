@@ -1,3 +1,6 @@
+;;;DEPRECATED
+
+
 ;;; init.el --- Initialization file for Emacs
 
 ;;; Commentary:
