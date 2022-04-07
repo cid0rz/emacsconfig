@@ -136,7 +136,16 @@
   (ielm-mode . turn-on-elisp-slime-nav-mode))
 
 ;; async and await for emacs lisp
-(use-package aio)
+
+(use-package async-await)
+(use-package bencode
+  :straight '(bencode :host github
+                      :repo "skeeto/emacs-bencode"
+                      :branch "master")
+  )
+
+(use-package macrostep
+  :bind ("C-c e m" . macrostep-expand))
 
 (use-package exwm
   :disabled
@@ -303,6 +312,7 @@
                     :repo "minad/corfu"
                     :branch "main")
   :config
+  (setq corfu-auto t)
   (corfu-global-mode))
 
 (use-package orderless
@@ -328,11 +338,46 @@
                       :repo "minad/consult"
                       :branch "main"))
 
+(use-package savehist
+  :config
+  (setq history-length 40)
+  (savehist-mode 1))
+
+(use-package htmlize)
+
+(use-package org
+      :after ob-hy
+      :config
+      (require 'ob-comint)
+      ;;LOAD LANGUAGES FOR CODEBLOCKS
+
+      (with-eval-after-load 'org
+        (org-babel-do-load-languages
+         'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t)))
+        (require 'org-tempo)
+
+        (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+        (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+        (add-to-list 'org-structure-template-alist '("py" . "src python"))
+      ))
+
+;;for org-babel to know about hy
+(use-package ob-hy
+  :straight '(ob-hy   :host github
+                      :repo "brantou/ob-hy"
+                      :branch "master"))
+
+;;  (setq org-html-htmlize-output-type 'css)
+
+;;git flavoured markdown
+(use-package ox-gfm
+      :after org
+      :config
+      (require 'ox-gfm nil t)
+      )
+
 (use-package which-key
   :config (which-key-mode))
-
-(use-package macrostep
-  :bind ("C-c e m" . macrostep-expand))
 
 (use-package pyenv
   :straight (:host github :repo "aiguofer/pyenv.el")
@@ -348,46 +393,19 @@
 
   (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
-(use-package elpy
-  :init
-  (elpy-enable)
-  ;; backend to jedi for finding definitions
-  :custom (elpy-rpc-backend "jedi"))
+ (use-package elpy
+   :straight (:host github :repo "jorgenschaefer/elpy")
+   :init
+   (elpy-enable)
+   ;; backend to jedi for finding definitions
+   :custom (elpy-rpc-backend "jedi"))
 
 
-(use-package py-autopep8
-  :hook (elpy-mode py-autopep8-enable-on-save))
+ (use-package py-autopep8
+   :hook (elpy-mode py-autopep8-enable-on-save))
 
 (use-package hy-mode
   :mode ("\\.hy\\'" . hy-mode))
-
-;;for org-babel
-(use-package ob-hy)
-
-(use-package htmlize)
-
-(use-package org
-      :config
-      (require 'ob-comint)
-      ;;LOAD LANGUAGES FOR CODEBLOCKS
-
-      (with-eval-after-load 'org
-        (org-babel-do-load-languages
-         'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t)))
-        (require 'org-tempo)
-
-        (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-        (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-        (add-to-list 'org-structure-template-alist '("py" . "src python"))
-      ))
-
-;;  (setq org-html-htmlize-output-type 'css)
-
-  ;;git flavoured markdown
-  (use-package ox-gfm
-    :config
-    (require 'ox-gfm nil t)
-    )
 
 (use-package magit
   :bind
@@ -411,13 +429,15 @@
 
 (use-package docker-compose-mode)
 
-(use-package arduino-mode)
+(use-package arduino-mode
+  :disabled
+	     )
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+	 ("\\.md\\'" . markdown-mode)
+	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
 (use-package vterm)
