@@ -21,6 +21,7 @@
 
 ;; if you want line numbers
 ;; (global-display-line-numbers-mode 1)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 ;; popular bindings
 ;;(global-set-key "\C-x\C-m" 'execute-extended-command) ;; add binding for M-x
@@ -210,6 +211,12 @@
    '(aw-leading-char-face
      ((t (:inherit ace-jump-face-foreground :height 3.0))))))
 
+(use-package highlight-indent-guides
+  :config
+  (setq highlight-indent-guides-method 'character)
+  :hook (prog-mode . highlight-indent-guides-mode)
+)
+
 (use-package smartparens
   
   :config
@@ -397,6 +404,8 @@
    :straight (:host github :repo "jorgenschaefer/elpy")
    :init
    (elpy-enable)
+   :config
+   (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
    ;; backend to jedi for finding definitions
    :custom (elpy-rpc-backend "jedi"))
 
@@ -410,7 +419,7 @@
 (use-package magit
   :bind
   (("C-x g" . magit-status))
-  (("C-x M-g" . magit-dispatch-popup)))
+  (("C-x M-g" . magit-dispatch)))
 
 (use-package git-timemachine
   :bind ("M-g M-t" . git-timemachine))
