@@ -318,9 +318,11 @@
   :straight '(corfu :host github
                     :repo "minad/corfu"
                     :branch "main")
-  :config
-  (setq corfu-auto t)
-  (corfu-global-mode))
+  ;:config
+  ;(setq corfu-auto t)
+  ;(corfu-global-mode))
+  :init
+  (global-corfu-mode))
 
 (use-package orderless
   ;:repo "oantolin/orderless"
@@ -411,6 +413,7 @@
 
 
  (use-package py-autopep8
+   :disabled
    :hook (elpy-mode py-autopep8-enable-on-save))
 
 (use-package hy-mode
@@ -423,6 +426,8 @@
 
 (use-package git-timemachine
   :bind ("M-g M-t" . git-timemachine))
+(use-package forge
+  :after magit)
 
 (defun ediff-copy-both-to-C ()
   "combine both buffers into the result buffer in order"
