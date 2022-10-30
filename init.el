@@ -92,19 +92,19 @@
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
+      (bootstrap-version 6))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
          'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-(use-package bind-key)
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
+  (use-package bind-key)
 
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
@@ -402,14 +402,15 @@
 
   (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
- (use-package elpy
-   :straight (:host github :repo "jorgenschaefer/elpy")
-   :init
-   (elpy-enable)
-   :config
-   (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
-   ;; backend to jedi for finding definitions
-   :custom (elpy-rpc-backend "jedi"))
+ ;; (use-package elpy
+ ;;   :disabled
+ ;;   :straight (:host github :repo "jorgenschaefer/elpy")
+ ;;   :init
+ ;;   (elpy-enable)
+ ;;   :config
+ ;;   (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
+ ;;   ;; backend to jedi for finding definitions
+ ;;   :custom (elpy-rpc-backend "jedi"))
 
 
  (use-package py-autopep8
