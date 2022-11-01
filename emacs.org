@@ -636,18 +636,18 @@ for better exporting lets use:
 
     (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
-   ;; (use-package elpy
-   ;;   :disabled
-   ;;   :straight (:host github :repo "jorgenschaefer/elpy")
-   ;;   :init
-   ;;   (elpy-enable)
-   ;;   :config
-   ;;   (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
-   ;;   ;; backend to jedi for finding definitions
-   ;;   :custom (elpy-rpc-backend "jedi"))
+   (use-package elpy
+     :straight (:host github :repo "jorgenschaefer/elpy")
+     :init
+     (elpy-enable)
+     :config
+     (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
+     ;; backend to jedi for finding definitions
+     :custom (elpy-rpc-backend "jedi"))
 
 
-   (use-package py-autopep8
+   (use-package p
+     y-autopep8
      :disabled
      :hook (elpy-mode py-autopep8-enable-on-save))
 

@@ -309,6 +309,23 @@
 (with-eval-after-load 'eglot
   (setq completion-category-defaults nil))
 
+
+(use-package orderless
+                                        ;:repo "oantolin/orderless"
+                                        ;:branch "master"
+  :config
+  (defun orderless-fast-dispatch (word index total)
+    (and (= index 0) (= total 1) (length< word 4)
+         `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
+
+  (orderless-define-completion-style orderless-fast
+    (orderless-style-dispatchers '(orderless-fast-dispatch))
+    (orderless-matching-styles '(orderless-literal orderless-regexp)))
+
+  (customize-set-variable 'completion-styles '(orderless))
+  (customize-set-variable 'completion-category-overrides '((file (styles . (partial-completion)))))
+  (setq completion-category-defaults nil))
+
 (use-package vertico
   :straight '(vertico :host github
                       :repo "minad/vertico"
@@ -323,7 +340,8 @@
                     :branch "main")
                                         ;:config
                                         ;(setq corfu-auto t)
-                                        ;(corfu-global-mode))
+  :custom
+  (completion-styles '(orderless-fast))
   :init
   (global-corfu-mode))
 
@@ -363,13 +381,6 @@
   ;;(add-to-list 'completion-at-point-functions #'cape-line)
   )
 
-(use-package orderless
-                                        ;:repo "oantolin/orderless"
-                                        ;:branch "master"
-  :init
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion))), (eglot (styles . (orderless))))))
 
 (use-package marginalia
   :straight '(marginalia :host github
@@ -471,18 +482,18 @@
 
   (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
- ;; (use-package elpy
- ;;   :disabled
- ;;   :straight (:host github :repo "jorgenschaefer/elpy")
- ;;   :init
- ;;   (elpy-enable)
- ;;   :config
- ;;   (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
- ;;   ;; backend to jedi for finding definitions
- ;;   :custom (elpy-rpc-backend "jedi"))
+ (use-package elpy
+   :straight (:host github :repo "jorgenschaefer/elpy")
+   :init
+   (elpy-enable)
+   :config
+   (setq elpy-modules (delq 'elpy-module-highlight-indentation elpy-modules))
+   ;; backend to jedi for finding definitions
+   :custom (elpy-rpc-backend "jedi"))
 
 
- (use-package py-autopep8
+ (use-package p
+   y-autopep8
    :disabled
    :hook (elpy-mode py-autopep8-enable-on-save))
 
