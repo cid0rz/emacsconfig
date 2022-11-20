@@ -43,6 +43,13 @@
 ;;use ssh for tramp
 (setq tramp-default-method "ssh")
 
+;; Set default font
+(set-face-attribute 'default nil
+                    :family "Source Code Pro"
+                    :height 140
+                    :weight 'normal
+                    :width 'normal)
+
 ;;remove menu-bar and scroll bars
 (unless (eq window-system 'ns)
   (menu-bar-mode -1))
