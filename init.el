@@ -342,6 +342,7 @@
   )
 
 (use-package corfu
+  :disabled
   :straight '(corfu :host github
                     :repo "minad/corfu"
                     :branch "main")
@@ -353,6 +354,7 @@
   (global-corfu-mode))
 
 (use-package cape
+  :disabled
   :after corfu
   ;; Bind dedicated completion commands
   ;; Alternative prefix keys: C-c p, M-p, M-+, ...
@@ -400,11 +402,13 @@
   (marginalia-mode))
 
 (use-package consult
+  :disabled
   :straight '(consult :host github
                       :repo "minad/consult"
                       :branch "main"))
 
 (use-package tempel
+  :disabled
   :bind (("M-+" . tempel-complete)
          ("M-*" . tempel-insert)
          :map tempel-map
@@ -490,6 +494,7 @@
   (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
  (use-package elpy
+   :disabled
    :straight (:host github :repo "jorgenschaefer/elpy")
    :init
    (elpy-enable)
@@ -505,7 +510,14 @@
    :hook (elpy-mode py-autopep8-enable-on-save))
 
 (use-package hy-mode
+  :disabled
   :mode ("\\.hy\\'" . hy-mode))
+
+(use-package rust-mode)
+(use-package cargo-mode
+  :disabled
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
 
 (use-package magit
   :bind
@@ -543,3 +555,20 @@
   :init (setq markdown-command "multimarkdown"))
 
 (use-package vterm)
+
+(use-package posframe
+  :straight '(posframe     :host github
+                           :repo "tumashu/posframe"
+                           :branch "master"))
+
+(use-package yasnippet
+  :straight '(yasnippet  :host github
+                         :repo "joaotavora/yasnippet"
+                         :branch "master")
+  :init
+  (yas-global-mode 1))
+
+(add-to-list 'load-path "/home/cid0rz/.emacs.d/lsp-bridge")
+(require 'lsp-bridge)
+(global-lsp-bridge-mode)
+(setq lsp-bridge-python-lsp-server 'pylsp)

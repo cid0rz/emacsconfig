@@ -441,7 +441,7 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
     (customize-set-variable 'completion-styles '(orderless))
     (customize-set-variable 'completion-category-overrides '((file (styles . (partial-completion)))))
     (setq completion-category-defaults nil))
-  
+
   (use-package vertico
     :straight '(vertico :host github
                         :repo "minad/vertico"
@@ -451,6 +451,7 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
     )
 
   (use-package corfu
+    :disabled
     :straight '(corfu :host github
                       :repo "minad/corfu"
                       :branch "main")
@@ -462,6 +463,7 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
     (global-corfu-mode))
 
   (use-package cape
+    :disabled
     :after corfu
     ;; Bind dedicated completion commands
     ;; Alternative prefix keys: C-c p, M-p, M-+, ...
@@ -509,6 +511,7 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
     (marginalia-mode))
 
   (use-package consult
+    :disabled
     :straight '(consult :host github
                         :repo "minad/consult"
                         :branch "main"))
@@ -521,35 +524,36 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
 * Temple.el for templates
 
 #+begin_src emacs-lisp
-    (use-package tempel
-      :bind (("M-+" . tempel-complete)
-             ("M-*" . tempel-insert)
-             :map tempel-map
-             ("M-]" . tempel-next)
-             ("M-[" . tempel-previous))
+  (use-package tempel
+    :disabled
+    :bind (("M-+" . tempel-complete)
+           ("M-*" . tempel-insert)
+           :map tempel-map
+           ("M-]" . tempel-next)
+           ("M-[" . tempel-previous))
 
-      :init
-      ;; Setup completion at point
-      (defun tempel-setup-capf ()
-        ;; Add the Tempel Capf to `completion-at-point-functions'.
-        ;; `tempel-expand' only triggers on exact matches. Alternatively use
-        ;; `tempel-complete' if you want to see all matches, but then you
-        ;; should also configure `tempel-trigger-prefix', such that Tempel
-        ;; does not trigger too often when you don't expect it. NOTE: We add
-        ;; `tempel-expand' *before* the main programming mode Capf, such
-        ;; that it will be tried first.
-        (setq-local completion-at-point-functions
-                    (cons #'tempel-expand
-                          completion-at-point-functions)))
+    :init
+    ;; Setup completion at point
+    (defun tempel-setup-capf ()
+      ;; Add the Tempel Capf to `completion-at-point-functions'.
+      ;; `tempel-expand' only triggers on exact matches. Alternatively use
+      ;; `tempel-complete' if you want to see all matches, but then you
+      ;; should also configure `tempel-trigger-prefix', such that Tempel
+      ;; does not trigger too often when you don't expect it. NOTE: We add
+      ;; `tempel-expand' *before* the main programming mode Capf, such
+      ;; that it will be tried first.
+      (setq-local completion-at-point-functions
+                  (cons #'tempel-expand
+                        completion-at-point-functions)))
 
-      (add-hook 'prog-mode-hook 'tempel-setup-capf)
-      (add-hook 'text-mode-hook 'tempel-setup-capf)
+    (add-hook 'prog-mode-hook 'tempel-setup-capf)
+    (add-hook 'text-mode-hook 'tempel-setup-capf)
 
-      ;; Optionally make the Tempel templates available to Abbrev,
-      ;; either locally or globally. `expand-abbrev' is bound to C-x '.
-      ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
-      ;; (global-tempel-abbrev-mode)
-      )
+    ;; Optionally make the Tempel templates available to Abbrev,
+    ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+    ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+    ;; (global-tempel-abbrev-mode)
+    )
 #+end_src
 
 
@@ -644,6 +648,7 @@ for better exporting lets use:
     (add-hook 'switch-buffer-functions 'pyenv-update-on-buffer-switch))
 
    (use-package elpy
+     :disabled
      :straight (:host github :repo "jorgenschaefer/elpy")
      :init
      (elpy-enable)
@@ -659,11 +664,24 @@ for better exporting lets use:
      :hook (elpy-mode py-autopep8-enable-on-save))
 
   (use-package hy-mode
+    :disabled
     :mode ("\\.hy\\'" . hy-mode))
 
 
 #+end_src
 
+
+* Rust Config
+
+#+begin_src emacs-lisp
+
+  (use-package rust-mode)
+  (use-package cargo-mode
+    :disabled
+    :config
+    (add-hook 'rust-mode-hook 'cargo-minor-mode))
+
+#+end_src
 
 
 * Magit config
@@ -721,4 +739,30 @@ for better exporting lets use:
 
 #+begin_src emacs-lisp
 (use-package vterm)
+#+end_src
+
+* lsp-bridge and deps
+
+#+begin_src emacs-lisp
+  (use-package posframe
+    :straight '(posframe     :host github
+                             :repo "tumashu/posframe"
+                             :branch "master"))
+
+  (use-package yasnippet
+    :straight '(yasnippet  :host github
+                           :repo "joaotavora/yasnippet"
+                           :branch "master")
+    :init
+    (yas-global-mode 1))
+
+#+end_src
+
+markdonw-mode is already installed.
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "/home/cid0rz/.emacs.d/lsp-bridge")
+  (require 'lsp-bridge)
+  (global-lsp-bridge-mode)
+  (setq lsp-bridge-python-lsp-server 'pylsp)
 #+end_src
