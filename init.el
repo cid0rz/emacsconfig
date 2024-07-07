@@ -134,7 +134,7 @@
 
 (use-package slime
   :straight t
-  :config (setq inferior-lisp-program "sbcl")
+  :config (setq inferior-lisp-program "sbcl --dynamic-space-size 6144")
   )
 
 (use-package elisp-slime-nav
@@ -449,7 +449,7 @@
 
       (with-eval-after-load 'org
         (org-babel-do-load-languages
-         'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t)))
+         'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t) (nim . t)))
         (require 'org-tempo)
 
         (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -457,7 +457,13 @@
         (add-to-list 'org-structure-template-alist '("py" . "src python"))
       ))
 
-;;for org-babel to know about hy
+;;for org-babel to know about nim and hy
+(use-package ob-nim
+  :straight '(ob-nim   :host github
+                      :repo "Lompik/ob-nim"
+                      :branch "master"))
+
+
 (use-package ob-hy
   :straight '(ob-hy   :host github
                       :repo "brantou/ob-hy"
@@ -499,13 +505,15 @@
    :custom (elpy-rpc-backend "jedi"))
 
 
- (use-package p
-   y-autopep8
+ (use-package py-autopep8
    :disabled
    :hook (elpy-mode py-autopep8-enable-on-save))
 
 (use-package hy-mode
   :mode ("\\.hy\\'" . hy-mode))
+
+(use-package nim-mode
+  :straight (:host github :repo "nim-lang/nim-mode"))
 
 (use-package magit
   :bind
@@ -533,13 +541,17 @@
 
 (use-package arduino-mode
   :disabled
-	     )
+             )
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md\\'" . markdown-mode)
-	 ("\\.markdown\\'" . markdown-mode))
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
 (use-package vterm)
+
+(use-package emacsql-sqlite)
+
+(use-package crdt)

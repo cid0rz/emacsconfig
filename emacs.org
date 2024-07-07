@@ -183,7 +183,7 @@ I am using straight.el, i think its a very good package manager.
 
   (use-package slime
     :straight t
-    :config (setq inferior-lisp-program "sbcl")
+    :config (setq inferior-lisp-program "sbcl --dynamic-space-size 6144")
     )
 
   (use-package elisp-slime-nav
@@ -576,7 +576,7 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
 
         (with-eval-after-load 'org
           (org-babel-do-load-languages
-           'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t)))
+           'org-babel-load-languages '((emacs-lisp . t) (C . t) (python . t) (hy . t) (shell . t) (lisp . t) (nim . t)))
           (require 'org-tempo)
 
           (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -590,9 +590,16 @@ This is the newest part with Vertico, Corfu and Consult with orderless for impro
 
 * Org config
 
+
 #+begin_src emacs-lisp
 
-  ;;for org-babel to know about hy
+  ;;for org-babel to know about nim and hy
+  (use-package ob-nim
+    :straight '(ob-nim   :host github
+                        :repo "Lompik/ob-nim"
+                        :branch "master"))
+
+
   (use-package ob-hy
     :straight '(ob-hy   :host github
                         :repo "brantou/ob-hy"
@@ -653,8 +660,7 @@ for better exporting lets use:
      :custom (elpy-rpc-backend "jedi"))
 
 
-   (use-package p
-     y-autopep8
+   (use-package py-autopep8
      :disabled
      :hook (elpy-mode py-autopep8-enable-on-save))
 
@@ -663,6 +669,15 @@ for better exporting lets use:
 
 
 #+end_src
+
+* Nim configuration
+
+#+begin_src emacs-lisp
+  (use-package nim-mode
+    :straight (:host github :repo "nim-lang/nim-mode"))
+#+end_src
+
+
 
 
 
@@ -722,3 +737,16 @@ for better exporting lets use:
 #+begin_src emacs-lisp
 (use-package vterm)
 #+end_src
+
+* sqlite
+
+#+begin_src emacs-lisp
+(use-package emacsql-sqlite)
+#+end_src
+
+* crdt for collaborative editing
+
+#+begin_src emacs-lisp
+(use-package crdt)
+#+end_src
+
